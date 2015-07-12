@@ -114,6 +114,6 @@ Fast-forward
   
 Now, you can make a cron to run github_backup_user_repos.py every X time to keep your backup up to date :-)
 ```
-crontab -l | { cat; echo "42 2 * * * python /PATH_TO_GITHUB_BACKUP_USER_REPOS/github_backup_user_repos.py USERNAME > /PATH_TO_GITHUB_BACKUP_USER_REPOS/backup.log"; } | crontab -
+crontab -l | { cat; echo "42 2 * * * python /PATH_TO_GITHUB_BACKUP_USER_REPOS/github_backup_user_repos.py USERNAME &> /PATH_TO_GITHUB_BACKUP_USER_REPOS/backup.log"; } | crontab -
 ```
 Don't forget to replace PATH_TO_GITHUB_BACKUP_USER_REPOS and USERNAME.  
