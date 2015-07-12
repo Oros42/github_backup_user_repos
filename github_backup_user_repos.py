@@ -41,7 +41,7 @@ else:
 							print("repo {}/{}\t: update {} in {}{}".format(i, github_json["total_count"],item["clone_url"], repo_path, item["full_name"]))
 							os.system("git --git-dir={}{}/.git pull".format(repo_path, item["full_name"]))
 						else:
-							print("repo {}/{}\t: no update for {}".format(i, github_json["total_count"],item["full_name"]))
+							print("repo {}/{}\t: no update for {}{}".format(i, github_json["total_count"], repo_path ,item["full_name"]))
 					else:
 						print("repo {}/{}\t: clone {} in {}{}".format(i, github_json["total_count"],item["clone_url"], repo_path, item["full_name"]))
 						os.system("git clone {} {}{}".format(item["clone_url"], repo_path, item["full_name"]))
