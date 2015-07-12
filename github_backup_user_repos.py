@@ -10,7 +10,7 @@
 import os
 from json import loads as json_loads
 from sys import exit, argv
-from time import strftime, localtime
+from time import strftime, gmtime
 try:
 	import urllib.request as urllib
 except ImportError:
@@ -36,7 +36,8 @@ else:
 				i=1
 				for item in github_json["items"]:
 					if os.path.exists("{}{}".format(repo_path,item["full_name"])):
-						if item["updated_at"] > strftime("%Y-%m-%dT%H:%M:%SZ",localtime(os.path.getmtime("{}{}".format(repo_path,item["full_name"])))):
+						file_time=strftime("%Y-%m-%dT%H:%M:%SZ",gmtime(os.path.getmtime("{}{}".format(repo_path,item["full_name"]))))
+						if item["updated_at"] > file_time or item["pushed_at"] > file_time:
 							print("repo {}/{}\t: update {} in {}{}".format(i, github_json["total_count"],item["clone_url"], repo_path, item["full_name"]))
 							os.system("git --git-dir={}{}/.git pull".format(repo_path, item["full_name"]))
 						else:
