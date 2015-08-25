@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 # author Oros
-# date 2015/07/12
+# date 2015/08/25
 # license CC0
 #
 # This program clone and pull all repositories of one or more user for backup.
@@ -19,31 +19,30 @@ if os.system("which git>/dev/null"):
 	exit("\033[31mYou need to setup git\033[0m\nsudo apt-get install git")
 
 # path where repositories are clone
-repo_path="./repositories/"
+repo_path="{}/repositories/".format(os.path.dirname(os.path.realpath(__file__)))
 
 if not argv[1:]:
 	exit("\033[31mNeed username in argument !\033[0m Like :\npython {n} username [username2 username3 ...]".format(n=argv[0]))
 else:
 	for user in argv[1:]:
-		url="https://api.github.com/search/repositories?q=user%3A{}&type=Repositories".format(user)
+		url="https://api.github.com/users/{}/repos".format(user)
 		github_page = urllib.urlopen(url)
 		if github_page:
 			github_json = json_loads(github_page.read(1000000).decode('utf-8'))
 			if github_json:
-				if github_json["incomplete_results"]:
-					print("\033[31m/!\TODO\033[0m : incomplete_results not finish to code")
-				print("{} repositories from {}:".format(github_json["total_count"],user))
 				i=1
-				for item in github_json["items"]:
+				nb_repo=len(github_json)
+				print("{} repositories from {}:".format(nb_repo,user))
+				for item in github_json:
 					if os.path.exists("{}{}".format(repo_path,item["full_name"])):
 						file_time=strftime("%Y-%m-%dT%H:%M:%SZ",gmtime(os.path.getmtime("{}{}".format(repo_path,item["full_name"]))))
 						if item["updated_at"] > file_time or item["pushed_at"] > file_time:
-							print("repo {}/{}\t: update {} in {}{}".format(i, github_json["total_count"],item["clone_url"], repo_path, item["full_name"]))
+							print("repo {}/{}\t: update {} in {}{}".format(i, nb_repo,item["clone_url"], repo_path, item["full_name"]))
 							os.system("git --git-dir={}{}/.git pull".format(repo_path, item["full_name"]))
 						else:
-							print("repo {}/{}\t: no update for {}{}".format(i, github_json["total_count"], repo_path ,item["full_name"]))
+							print("repo {}/{}\t: no update for {}{}".format(i, nb_repo, repo_path ,item["full_name"]))
 					else:
-						print("repo {}/{}\t: clone {} in {}{}".format(i, github_json["total_count"],item["clone_url"], repo_path, item["full_name"]))
+						print("repo {}/{}\t: clone {} in {}{}".format(i, nb_repo,item["clone_url"], repo_path, item["full_name"]))
 						os.system("git clone {} {}{}".format(item["clone_url"], repo_path, item["full_name"]))
 					i+=1
 			else:
