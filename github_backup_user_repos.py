@@ -19,7 +19,7 @@ except ImportError:
 if os.system("which git>/dev/null"):
     exit("\033[31mYou need to setup git\033[0m\nsudo apt-get install git")
 
-def cloneRepo(user, outputDir):
+def cloneRepo(user, outputDir, force):
     if user == "":
         exit("\033[31mNeed username in argument !\033[0m")
     if outputDir == "":
@@ -49,9 +49,9 @@ def cloneRepo(user, outputDir):
                         os.chdir(outputDir)
                         if os.path.exists("{}{}".format(outputDir, item["full_name"])):
                             file_time=strftime("%Y-%m-%dT%H:%M:%SZ",gmtime(os.path.getmtime("{}{}".format(outputDir,item["full_name"]))))
-                            if item["updated_at"] > file_time or item["pushed_at"] > file_time:
+                            if force or item["updated_at"] > file_time or item["pushed_at"] > file_time:
                                 print("repo {}/{}\t: update {} in {}{}".format(i, nb_repo,item["clone_url"], outputDir, item["full_name"]))
-                                os.system("pushd {}{}; git pull; popd".format(outputDir, item["full_name"]))
+                                os.system("cd {}{}; git pull".format(outputDir, item["full_name"]))
                             else:
                                 print("repo {}/{}\t: no update for {}{}".format(i, nb_repo, outputDir ,item["full_name"]))
                         else:
@@ -69,7 +69,9 @@ if __name__ == "__main__":
     parser = OptionParser(usage="%prog: [options]")
     parser.add_option("-u", "--user", dest="username", type="string", default="", help="Username (From https://github.com/<Username>)")
     parser.add_option("-o", "--output", dest="output", type="string", default="./repositories/", help="Path to the output directory")
+    parser.add_option("-f", "--force", dest="force", action="store_true", help="Force git pull")
     (options, args) = parser.parse_args()
     user = options.username
     outputDir = options.output
-    cloneRepo(user, outputDir)
+    force = options.force
+    cloneRepo(user, outputDir, force)
